@@ -8,23 +8,6 @@ on p.id_professor = t.id_professor
 group by p.nome_professor;
 
 /*
-15. Apresentar o nome dos alunos que fizeram a disciplina de Lógica em 2018/1 (utilizar exists).
-+++ gemini +++ */
-
-SELECT a.nome_aluno, a.id_aluno
-FROM aluno a
-WHERE EXISTS (
-    SELECT 1
-    FROM turma_aluno ta
-    INNER JOIN turma t ON ta.id_turma = t.id_turma
-    INNER JOIN disciplina d ON t.id_disciplina = d.id_disciplina
-    WHERE ta.id_aluno = a.id_aluno
-    AND d.nome_disciplina = 'ProgramaçãoI'
-    AND t.semestre = '2018/1'
-);
-200 201 
-
-/*
 14. Apresentar o nome dos cursos e o total de turmas ofertadas em 2018/1. 
 Se o curso não tiver nenhuma turma ele deve aparecer também com o total de turma 0. */
 
@@ -37,51 +20,51 @@ and t.semestre = '2018/1'
 group by c.nome_curso;
 
 /*
-16. Apresentar o nome do aluno que tirou a maior nota na turma 102.*/
+15. Apresentar o nome dos alunos que fizeram a disciplina de Lógica em 2018/1 (utilizar exists). */
 
-select a.nome_aluno, MAX(ta.media_final) 
-from aluno a inner join turma_aluno ta
-on a.id_aluno = ta.id_aluno
-where ta.id_turma = 402
-group by a.nome_aluno;
+select a.nome_aluno, a.id_aluno
+from aluno a
+where exists (
+    select 1
+    from turma_aluno ta
+    inner join turma t on ta.id_turma = t.id_turma
+    inner join disciplina d on t.id_disciplina = d.id_disciplina
+    where ta.id_aluno = a.id_aluno
+    and d.nome_disciplina = 'ProgramaçãoI'
+    and t.semestre = '2018/1'
+);
 
 /*
-17. Apresentar o nome do aluno que tirou a maior nota na disciplina de BDI em 2018/1.
-+++gemini+++ */
+16. Apresentar o nome do aluno que tirou a maior nota na turma 102.*/
 
-SELECT a.nome_aluno, ta.media_final
-FROM aluno a INNER JOIN turma_aluno ta 
-ON a.id_aluno = ta.id_aluno
-INNER JOIN turma t 
-ON ta.id_turma = t.id_turma
-INNER JOIN disciplina d ON t.id_disciplina = d.id_disciplina
-WHERE ta.media_final = (
-    SELECT MAX(ta2.media_final)
-    FROM turma_aluno ta2
-    INNER JOIN turma t2 ON ta2.id_turma = t2.id_turma
-    INNER JOIN disciplina d2 ON t2.id_disciplina = d2.id_disciplina
-    WHERE d2.nome_disciplina = 'BDI' AND t2.semestre = '2018/1'
+select a.nome_aluno 
+from aluno a inner join turma_aluno ta
+on a.id_aluno = ta.id_aluno
+where ta.media_final = (
+    select MAX(turma_aluno.media_final)
+    from turma_aluno
 )
-AND d.nome_disciplina = 'BDI'
-AND t.semestre = '2018/1'; 
+and ta.id_turma = 402
 
+/*
+17. Apresentar o nome do aluno que tirou a maior nota na disciplina de BDI em 2018/1. */
 
-SELECT a.nome_aluno, MAX(ta.media_final) AS maior_nota_BDI
-FROM aluno a
-INNER JOIN turma_aluno ta ON a.id_aluno = ta.id_aluno
-INNER JOIN turma t ON ta.id_turma = t.id_turma
-INNER JOIN disciplina d ON t.id_disciplina = d.id_disciplina
-WHERE d.nome_disciplina = 'BDI'
-AND t.semestre = '2018/1'
-GROUP BY a.nome_aluno
-HAVING MAX(ta.media_final) = (
-    SELECT MAX(ta.media_final)
-    FROM turma_aluno ta
-    INNER JOIN turma t ON ta.id_turma = t.id_turma
-    INNER JOIN disciplina d ON t.id_disciplina = d.id_disciplina
-    WHERE d.nome_disciplina = 'BDI'
-    AND t.semestre = '2018/1'
-);
+select a.nome_aluno, ta.media_final
+from aluno a inner join turma_aluno ta 
+on a.id_aluno = ta.id_aluno
+inner join turma t 
+on ta.id_turma = t.id_turma
+inner join disciplina d on t.id_disciplina = d.id_disciplina
+where ta.media_final = (
+    select MAX(ta2.media_final)
+    from turma_aluno ta2
+    inner join turma t2 on ta2.id_turma = t2.id_turma
+    inner join disciplina d2 on t2.id_disciplina = d2.id_disciplina
+    where d2.nome_disciplina = 'BDI' and t2.semestre = '2018/1'
+)
+and d.nome_disciplina = 'BDI'
+and t.semestre = '2018/1'; 
+
 
 /*
 18. Apresentar o nome dos alunos do curso de Informática que nunca cursaram a disciplina de BDI. */
@@ -96,13 +79,13 @@ on t.id_disciplina = d.id_disciplina
 inner join curso c
 on d.id_curso = c.id_curso
 where c.nome_curso = 'Informática'
-and NOT EXISTS (
-    SELECT 1
-    FROM turma_aluno ta
-    INNER JOIN turma t ON ta.id_turma = t.id_turma
-    INNER JOIN disciplina d ON t.id_disciplina = d.id_disciplina
-    WHERE ta.id_aluno = a.id_aluno
-    AND d.nome_disciplina = 'BDI'
+and not exists (
+    select 1
+    from turma_aluno ta
+    inner join turma t on ta.id_turma = t.id_turma
+    inner join disciplina d on t.id_disciplina = d.id_disciplina
+    where ta.id_aluno = a.id_aluno
+    and d.nome_disciplina = 'BDI'
     )
 ;
 

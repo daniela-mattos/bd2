@@ -2,7 +2,7 @@
 13. Apresentar o nome do professor e o total de disciplinas ministradas por este professor. 
 Se o professor não ministrar nenhuma disciplina deve aparecer o valor 0. */
 
-select p.nome_professor, count(t.id_disciplina) as total_disciplina
+select p.nome_professor, count(distinct t.id_disciplina) as total_disciplina
 from professor p left outer join turma t
 on p.id_professor = t.id_professor
 group by p.nome_professor;
@@ -13,7 +13,7 @@ Se o curso não tiver nenhuma turma ele deve aparecer também com o total de tur
 
 select c.nome_curso, count(t.id_turma) as total_turma
 from turma t inner join disciplina d
-on t.id_disciplina = t.id_disciplina 
+on t.id_disciplina = d.id_disciplina 
 right outer join curso c
 on c.id_curso = d.id_curso
 and t.semestre = '2018/1' 
@@ -64,6 +64,23 @@ where ta.media_final = (
 )
 and d.nome_disciplina = 'BDI'
 and t.semestre = '2018/1'; 
+
+/* Mais adequada - sem a repetição dos joins dentro da subconsulta 
+*/
+Select a.nome_aluno 
+from turma t
+ inner join disciplina d
+on t.id_disciplina=d.id_disciplina
+inner join turma_aluno ta
+on t.id_turma = ta.id_turma
+inner join  aluno a 
+ on ta.id_aluno = a.id_aluno
+where d.nome_disciplina = 'BDI'
+and t.semestre = '2018/1'
+and ta.media_final = (select max(media_final)
+                       from turma_aluno
+                       where id_turma=ta.id_turma);
+
 
 
 /*

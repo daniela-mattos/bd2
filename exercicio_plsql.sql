@@ -8,5 +8,5 @@ INTO p_nome_funcionario, p_cargo, p_salario
 FROM funcionario f inner join cargo c
 ON f.id_cargo = c.id_cargo
 WHERE f.id_funcionario = p_id_funcionario;
-DBMS_OUTPUT.PUT_LINE(p_nome_funcionario || p_cargo || p_salario);
+DBMS_OUTPUT.PUT_LINE(p_nome_funcionario || " " || p_cargo || " " || p_salario);
 END;
